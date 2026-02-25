@@ -1,0 +1,16 @@
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.form-switch .form-check-input {
+  cursor: pointer;
+}
+
+.badge {
+  font-weight: 500;
+}

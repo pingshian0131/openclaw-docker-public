@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Login - Cron Dashboard{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title text-center mb-3">
+          <i class="bi bi-lock"></i> Login
+        </h4>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="POST">
+          <div class="mb-3">
+            <input type="password" class="form-control" name="password"
+                   placeholder="Password" autofocus required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

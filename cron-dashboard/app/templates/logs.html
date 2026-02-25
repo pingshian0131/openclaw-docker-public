@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Execution Logs - Cron Dashboard{% endblock %}
+{% block content %}
+<h5 class="mb-3">Execution Logs</h5>
+
+<form class="row g-2 mb-3" method="GET">
+  <div class="col-auto">
+    <select class="form-select form-select-sm" name="task_id" onchange="this.form.submit()">
+      <option value="">All Tasks</option>
+      {% for t in tasks %}
+      <option value="{{ t.id }}" {% if filter_task_id == t.id %}selected{% endif %}>{{ t.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <select class="form-select form-select-sm" name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      {% for s in ['success', 'failed', 'timeout', 'running'] %}
+      <option value="{{ s }}" {% if filter_status == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Task</th>
+        <th>Trigger</th>
+        <th>Status</th>
+        <th>Duration</th>
+        <th>Exit</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td><small>{{ log.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</small></td>
+        <td>
+          {% if log.task %}
+          <a href="{{ url_for('tasks.detail', task_id=log.task_id) }}">{{ log.task.name }}</a>
+          {% else %}
+          <span class="text-muted">Deleted</span>
+          {% endif %}
+        </td>
+        <td><small>{{ log.trigger_type }}</small></td>
+        <td>
+          {% if log.status == 'success' %}
+          <span class="badge bg-success">OK</span>
+          {% elif log.status == 'failed' %}
+          <span class="badge bg-danger">Failed</span>
+          {% elif log.status == 'timeout' %}
+          <span class="badge bg-warning text-dark">Timeout</span>
+          {% elif log.status == 'running' %}
+          <span class="badge bg-info">Running</span>
+          {% endif %}
+        </td>
+        <td><small>{% if log.duration_secs is not none %}{{ '%.1f'|format(log.duration_secs) }}s{% endif %}</small></td>
+        <td><small>{{ log.exit_code if log.exit_code is not none else '-' }}</small></td>
+        <td>
+          <a href="{{ url_for('logs.detail', log_id=log.id) }}" class="btn btn-outline-secondary btn-sm py-0">
+            <i class="bi bi-terminal"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav>
+  <ul class="pagination pagination-sm justify-content-center">
+    {% if pagination.has_prev %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ pagination.prev_num }}&task_id={{ filter_task_id or '' }}&status={{ filter_status or '' }}">&laquo;</a>
+    </li>
+    {% endif %}
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+    <li class="page-item {% if p == pagination.page %}active{% endif %}">
+      <a class="page-link" href="?page={{ p }}&task_id={{ filter_task_id or '' }}&status={{ filter_status or '' }}">{{ p }}</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled"><span class="page-link">...</span></li>
+    {% endif %}
+    {% endfor %}
+    {% if pagination.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ pagination.next_num }}&task_id={{ filter_task_id or '' }}&status={{ filter_status or '' }}">&raquo;</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

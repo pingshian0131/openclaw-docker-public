@@ -1,0 +1,110 @@
+services:
+  # === Work Gateway ===
+  openclaw-work:
+    build: &openclaw-build
+      context: .
+      dockerfile: Dockerfile.openclaw
+      args:
+        OPENCLAW_IMAGE: ${OPENCLAW_IMAGE:-openclaw:local}
+    environment:
+      TZ: Asia/Taipei
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_WORK_TOKEN}
+    volumes:
+      - ~/.openclaw-work:/home/node/.openclaw
+      - ~/.claude/.credentials.json:/home/node/.claude/.credentials.json:ro
+      - ~/work:/home/node/work
+    ports:
+      - "18791:18789"
+      - "18792:18790"
+    init: true
+    restart: unless-stopped
+    command:
+      - node
+      - dist/index.js
+      - gateway
+      - --bind
+      - lan
+      - --port
+      - "18789"
+      - --allow-unconfigured
+
+  # === Personal Gateway ===
+  openclaw-personal:
+    build: *openclaw-build
+    environment:
+      TZ: Asia/Taipei
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_PERSONAL_TOKEN}
+    volumes:
+      - ~/.openclaw-personal:/home/node/.openclaw
+      - ~/.claude/.credentials.json:/home/node/.claude/.credentials.json:ro
+      - ~/projects:/home/node/projects
+    ports:
+      - "18793:18789"
+      - "18794:18790"
+    init: true
+    restart: unless-stopped
+    command:
+      - node
+      - dist/index.js
+      - gateway
+      - --bind
+      - lan
+      - --port
+      - "18789"
+      - --allow-unconfigured
+
+  # === Work CLI (interactive) ===
+  cli-work:
+    build: *openclaw-build
+    environment:
+      TZ: Asia/Taipei
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_WORK_TOKEN}
+      BROWSER: echo
+    volumes:
+      - ~/.openclaw-work:/home/node/.openclaw
+    stdin_open: true
+    tty: true
+    init: true
+    entrypoint: ["node", "dist/index.js"]
+
+  # === Personal CLI (interactive) ===
+  cli-personal:
+    build: *openclaw-build
+    environment:
+      TZ: Asia/Taipei
+      HOME: /home/node
+      TERM: xterm-256color
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_PERSONAL_TOKEN}
+      BROWSER: echo
+    volumes:
+      - ~/.openclaw-personal:/home/node/.openclaw
+    stdin_open: true
+    tty: true
+    init: true
+    entrypoint: ["node", "dist/index.js"]
+
+  # === Cron Job Dashboard ===
+  cron-dashboard:
+    build: ./cron-dashboard
+    environment:
+      TZ: Asia/Taipei
+      DASHBOARD_PASSWORD: ${CRON_DASHBOARD_PASSWORD:-changeme}
+      SECRET_KEY: ${CRON_DASHBOARD_SECRET_KEY:-please-change-this-key}
+      LOG_RETENTION_DAYS: "30"
+    volumes:
+      - cron-dashboard-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/:/host_home
+      - ~/.config/rclone:/root/.config/rclone:ro
+    ports:
+      - "18799:5000"
+    restart: unless-stopped
+
+volumes:
+  cron-dashboard-data:

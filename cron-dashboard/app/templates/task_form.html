@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ 'New Task' if mode == 'create' else 'Edit Task' }} - Cron Dashboard{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <h5 class="mb-3">
+      {% if mode == 'create' %}
+      <i class="bi bi-plus-circle"></i> New Task
+      {% else %}
+      <i class="bi bi-pencil"></i> Edit Task: {{ task.name }}
+      {% endif %}
+    </h5>
+
+    <form method="POST" id="taskForm">
+      <div class="mb-3">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="name" required
+               value="{{ form.get('name', task.name if task else '') }}">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-control" name="description"
+               value="{{ form.get('description', task.description if task else '') }}">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Cron Expression <span class="text-danger">*</span></label>
+        <input type="text" class="form-control font-monospace" name="cron_expr" id="cronExpr"
+               required placeholder="0 3 * * *"
+               value="{{ form.get('cron_expr', task.cron_expr if task else '') }}">
+        <div id="cronPreview" class="form-text mt-1"></div>
+        <small class="text-muted">Format: minute hour day month weekday</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Command <span class="text-danger">*</span></label>
+        <textarea class="form-control font-monospace" name="command" rows="3"
+                  required>{{ form.get('command', task.command if task else '') }}</textarea>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Working Directory</label>
+          <input type="text" class="form-control font-monospace" name="working_dir"
+                 placeholder="/host_home"
+                 value="{{ form.get('working_dir', task.working_dir if task and task.working_dir else '') }}">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Timeout (seconds)</label>
+          <input type="number" class="form-control" name="timeout_secs" min="10"
+                 value="{{ form.get('timeout_secs', task.timeout_secs if task else 3600) }}">
+        </div>
+      </div>
+
+      <div class="mb-3 form-check form-switch">
+        <input type="checkbox" class="form-check-input" name="enabled" id="enabledCheck"
+               {% if mode == 'create' %}checked{% elif form.get('enabled') or (task and task.enabled) %}checked{% endif %}>
+        <label class="form-check-label" for="enabledCheck">Enabled</label>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          {{ 'Create' if mode == 'create' else 'Save' }}
+        </button>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cron-validator.js') }}"></script>
+{% endblock %}

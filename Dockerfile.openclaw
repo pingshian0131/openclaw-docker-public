@@ -1,0 +1,22 @@
+ARG OPENCLAW_IMAGE=openclaw:local
+FROM ${OPENCLAW_IMAGE}
+
+# Install Claude Code CLI (npm global for node user)
+RUN npm install -g --prefix /home/node/.local @anthropic-ai/claude-code
+
+ENV PATH="/home/node/.local/bin:${PATH}"
+
+# --- Optional: add your own Python packages ---
+# If your Claude Code skills need Python dependencies, uncomment and edit below:
+#
+# USER root
+# RUN apt-get update -qq \
+#     && apt-get install -y -qq --no-install-recommends python3-dev \
+#     && rm -rf /var/lib/apt/lists/*
+# USER node
+#
+# RUN python3 -c "import urllib.request; urllib.request.urlretrieve('https://bootstrap.pypa.io/get-pip.py', '/tmp/get-pip.py')" \
+#     && python3 /tmp/get-pip.py --user --break-system-packages --no-cache-dir \
+#     && python3 -m pip install --user --break-system-packages --no-cache-dir \
+#        your-package-here \
+#     && rm /tmp/get-pip.py

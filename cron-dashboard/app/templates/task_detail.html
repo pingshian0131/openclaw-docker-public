@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ task.name }} - Cron Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">{{ task.name }}</h5>
+  <div class="btn-group btn-group-sm">
+    <button class="btn btn-outline-success run-now-btn" data-task-id="{{ task.id }}">
+      <i class="bi bi-play-fill"></i> Run Now
+    </button>
+    <a href="{{ url_for('tasks.edit', task_id=task.id) }}" class="btn btn-outline-secondary">
+      <i class="bi bi-pencil"></i> Edit
+    </a>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="mb-0">
+          <dt>Schedule</dt>
+          <dd><code>{{ task.cron_expr }}</code></dd>
+          <dt>Command</dt>
+          <dd><pre class="mb-0 small">{{ task.command }}</pre></dd>
+          {% if task.working_dir %}
+          <dt>Working Directory</dt>
+          <dd><code>{{ task.working_dir }}</code></dd>
+          {% endif %}
+        </dl>
+      </div>
+      <div class="col-md-6">
+        <dl class="mb-0">
+          <dt>Status</dt>
+          <dd>
+            {% if task.enabled %}
+            <span class="badge bg-success">Enabled</span>
+            {% else %}
+            <span class="badge bg-secondary">Disabled</span>
+            {% endif %}
+          </dd>
+          <dt>Timeout</dt>
+          <dd>{{ task.timeout_secs }}s</dd>
+          {% if task.description %}
+          <dt>Description</dt>
+          <dd>{{ task.description }}</dd>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h6>Recent Executions</h6>
+{% if logs %}
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Trigger</th>
+        <th>Status</th>
+        <th>Duration</th>
+        <th>Exit</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td><small>{{ log.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</small></td>
+        <td><small>{{ log.trigger_type }}</small></td>
+        <td>
+          {% if log.status == 'success' %}
+          <span class="badge bg-success">OK</span>
+          {% elif log.status == 'failed' %}
+          <span class="badge bg-danger">Failed</span>
+          {% elif log.status == 'timeout' %}
+          <span class="badge bg-warning text-dark">Timeout</span>
+          {% elif log.status == 'running' %}
+          <span class="badge bg-info">Running</span>
+          {% endif %}
+        </td>
+        <td><small>{% if log.duration_secs is not none %}{{ '%.1f'|format(log.duration_secs) }}s{% endif %}</small></td>
+        <td><small>{{ log.exit_code if log.exit_code is not none else '-' }}</small></td>
+        <td>
+          <a href="{{ url_for('logs.detail', log_id=log.id) }}" class="btn btn-outline-secondary btn-sm py-0">
+            <i class="bi bi-terminal"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="text-muted">No executions yet.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Log #{{ log.id }} - Cron Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">
+    Execution Log #{{ log.id }}
+    {% if log.status == 'success' %}
+    <span class="badge bg-success">OK</span>
+    {% elif log.status == 'failed' %}
+    <span class="badge bg-danger">Failed</span>
+    {% elif log.status == 'timeout' %}
+    <span class="badge bg-warning text-dark">Timeout</span>
+    {% elif log.status == 'running' %}
+    <span class="badge bg-info">Running</span>
+    {% endif %}
+  </h5>
+  <a href="{{ url_for('logs.index') }}" class="btn btn-sm btn-secondary">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="mb-0">
+          <dt>Task</dt>
+          <dd>
+            {% if log.task %}
+            <a href="{{ url_for('tasks.detail', task_id=log.task_id) }}">{{ log.task.name }}</a>
+            {% else %}
+            <span class="text-muted">Deleted</span>
+            {% endif %}
+          </dd>
+          <dt>Trigger</dt>
+          <dd>{{ log.trigger_type }}</dd>
+        </dl>
+      </div>
+      <div class="col-md-6">
+        <dl class="mb-0">
+          <dt>Started</dt>
+          <dd>{{ log.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+          <dt>Finished</dt>
+          <dd>{{ log.finished_at.strftime('%Y-%m-%d %H:%M:%S') if log.finished_at else 'Running...' }}</dd>
+          <dt>Duration</dt>
+          <dd>{{ '%.1f'|format(log.duration_secs) if log.duration_secs is not none else '-' }}s</dd>
+          <dt>Exit Code</dt>
+          <dd>
+            {% if log.exit_code is not none %}
+            <code class="{% if log.exit_code == 0 %}text-success{% else %}text-danger{% endif %}">{{ log.exit_code }}</code>
+            {% else %}
+            -
+            {% endif %}
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if log.stdout %}
+<h6>stdout</h6>
+<pre class="bg-body-tertiary p-3 rounded small" style="max-height:500px; overflow:auto">{{ log.stdout }}</pre>
+{% endif %}
+
+{% if log.stderr %}
+<h6>stderr</h6>
+<pre class="bg-body-tertiary p-3 rounded small text-danger" style="max-height:500px; overflow:auto">{{ log.stderr }}</pre>
+{% endif %}
+
+{% if not log.stdout and not log.stderr %}
+<p class="text-muted">No output captured.</p>
+{% endif %}
+{% endblock %}

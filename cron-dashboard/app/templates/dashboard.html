@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Tasks - Cron Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">
+    Scheduled Tasks
+    <span class="badge bg-secondary">{{ task_data|length }}</span>
+  </h5>
+  <a href="{{ url_for('tasks.create') }}" class="btn btn-sm btn-primary">
+    <i class="bi bi-plus-lg"></i> New Task
+  </a>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover align-middle mb-0">
+    <thead>
+      <tr>
+        <th style="width:50px">On</th>
+        <th>Name</th>
+        <th>Schedule</th>
+        <th>Last Run</th>
+        <th>Status</th>
+        <th>Next Run</th>
+        <th style="width:120px">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in task_data %}
+      {% set t = item.task %}
+      <tr id="task-row-{{ t.id }}" class="{% if not t.enabled %}text-muted{% endif %}">
+        <td>
+          <div class="form-check form-switch">
+            <input class="form-check-input task-toggle" type="checkbox"
+                   data-task-id="{{ t.id }}" {% if t.enabled %}checked{% endif %}>
+          </div>
+        </td>
+        <td>
+          <a href="{{ url_for('tasks.detail', task_id=t.id) }}">{{ t.name }}</a>
+          {% if t.description %}
+          <br><small class="text-muted">{{ t.description[:80] }}</small>
+          {% endif %}
+        </td>
+        <td>
+          <code>{{ t.cron_expr }}</code>
+          {% if item.human_cron %}
+          <br><small class="text-muted">{{ item.human_cron }}</small>
+          {% endif %}
+        </td>
+        <td>
+          {% if t.last_run_at %}
+          <small>{{ t.last_run_at.strftime('%m/%d %H:%M') }}</small>
+          {% if t.last_run_duration_secs is not none %}
+          <br><small class="text-muted">{{ '%.1f'|format(t.last_run_duration_secs) }}s</small>
+          {% endif %}
+          {% else %}
+          <small class="text-muted">Never</small>
+          {% endif %}
+        </td>
+        <td>
+          {% if t.last_run_status == 'success' %}
+          <span class="badge bg-success">OK</span>
+          {% elif t.last_run_status == 'failed' %}
+          <span class="badge bg-danger">Failed</span>
+          {% elif t.last_run_status == 'timeout' %}
+          <span class="badge bg-warning text-dark">Timeout</span>
+          {% elif t.last_run_status == 'running' %}
+          <span class="badge bg-info">Running</span>
+          {% else %}
+          <span class="badge bg-secondary">-</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if item.next_run %}
+          <small>{{ item.next_run.strftime('%m/%d %H:%M') }}</small>
+          {% else %}
+          <small class="text-muted">-</small>
+          {% endif %}
+        </td>
+        <td>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-success run-now-btn" data-task-id="{{ t.id }}" title="Run Now">
+              <i class="bi bi-play-fill"></i>
+            </button>
+            <a href="{{ url_for('tasks.edit', task_id=t.id) }}" class="btn btn-outline-secondary" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <button class="btn btn-outline-danger delete-btn" data-task-id="{{ t.id }}"
+                    data-task-name="{{ t.name }}" title="Delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Confirm Delete</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Delete task <strong id="deleteTaskName"></strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteForm" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
