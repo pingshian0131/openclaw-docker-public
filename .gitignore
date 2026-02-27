@@ -1,4 +1,7 @@
 .env
 *.db
 __pycache__/
-.claude/
+!.claude/
+.claude/*
+!.claude/skills/
+!.claude/skills/**
