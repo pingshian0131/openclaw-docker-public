@@ -37,6 +37,15 @@ SEED_TASKS = [
         'timeout_secs': 60,
         'enabled': False,
     },
+    {
+        'name': 'OpenClaw Rebuild',
+        'description': 'Fetch latest stable release tag, rebuild openclaw:local image, restart gateway services only (not cron-dashboard)',
+        'cron_expr': '0 4 */2 * *',
+        'command': '/host_home/openclaw-docker/scripts/rebuild.sh',
+        'working_dir': '/host_home',
+        'timeout_secs': 3600,
+        'enabled': False,
+    },
 ]
 
 
