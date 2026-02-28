@@ -6,6 +6,20 @@ RUN npm install -g --prefix /home/node/.local @anthropic-ai/claude-code
 
 ENV PATH="/home/node/.local/bin:${PATH}"
 
+# --- Optional: install obsidian-cli for Obsidian vault management ---
+# Useful if your skills need to create/manage notes in an Obsidian vault.
+# See: https://github.com/Yakitrak/obsidian-cli
+#
+# USER root
+# ARG TARGETARCH
+# RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") \
+#     && curl -fsSL "https://github.com/Yakitrak/obsidian-cli/releases/download/v0.2.3/obsidian-cli_0.2.3_linux_${ARCH}.tar.gz" \
+#        -o /tmp/obsidian-cli.tar.gz \
+#     && tar -xzf /tmp/obsidian-cli.tar.gz -C /usr/local/bin obsidian-cli \
+#     && chmod +x /usr/local/bin/obsidian-cli \
+#     && rm /tmp/obsidian-cli.tar.gz
+# USER node
+
 # --- Optional: add your own Python packages ---
 # If your Claude Code skills need Python dependencies, uncomment and edit below:
 #

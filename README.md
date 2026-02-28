@@ -83,6 +83,10 @@ volumes:
 
 ## Customization
 
+### Adding obsidian-cli
+
+If your skills interact with an [Obsidian](https://obsidian.md/) vault, uncomment the `obsidian-cli` section in `Dockerfile.openclaw` to install [obsidian-cli](https://github.com/Yakitrak/obsidian-cli) for note creation and management.
+
 ### Adding Python Packages
 
 If your Claude Code skills need Python dependencies, edit `Dockerfile.openclaw` — there are commented-out instructions showing how to install pip and packages.

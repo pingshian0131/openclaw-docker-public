@@ -17,7 +17,7 @@ docker-compose.yml
 └── cron-dashboard       (Flask web UI, port 18799)
 ```
 
-- **OpenClaw services**: Built from `Dockerfile.openclaw` which extends the base `openclaw:local` image with Claude Code CLI. PATH is set in the Dockerfile.
+- **OpenClaw services**: Built from `Dockerfile.openclaw` which extends the base `openclaw:local` image with Claude Code CLI. Optionally installs obsidian-cli (Obsidian vault management) and Python packages. PATH is set in the Dockerfile.
 - **Cron dashboard**: Flask 3.1 + APScheduler + SQLite. Has Docker CLI, docker-compose plugin, git, and rclone installed for executing host-level tasks via Docker socket.
 
 ## Common Commands

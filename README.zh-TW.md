@@ -83,6 +83,10 @@ volumes:
 
 ## 自訂設定
 
+### 加裝 obsidian-cli
+
+如果你的 skill 需要與 [Obsidian](https://obsidian.md/) vault 互動，取消 `Dockerfile.openclaw` 中 `obsidian-cli` 區段的註解即可安裝 [obsidian-cli](https://github.com/Yakitrak/obsidian-cli)，用於建立和管理筆記。
+
 ### 加裝 Python 套件
 
 如果你的 Claude Code skill 需要 Python 依賴套件，請編輯 `Dockerfile.openclaw` — 裡面有註解說明如何安裝 pip 和套件。
