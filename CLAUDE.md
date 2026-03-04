@@ -48,7 +48,7 @@ Flask app with this structure:
 - `app/scheduler.py` — APScheduler integration, task execution with subprocess, log capture (512KB max), concurrency guard
 - `app/routes/` — Blueprints: `dashboard`, `tasks` (CRUD), `logs` (paginated), `api` (toggle/run/validate)
 - `app/auth.py` — Simple password-based session auth
-- `seed.py` — Example tasks (health check, docker cleanup, database backup)
+- `seed.py` — Example tasks (health check, docker cleanup, database backup, post-rebuild health check)
 
 Database is SQLite at `/data/cron_dashboard.db` (persisted via `cron-dashboard-data` volume).
 
@@ -59,6 +59,11 @@ Defined in `.env` (see `.env.example`):
 - `CRON_DASHBOARD_PASSWORD` — Dashboard login password
 - `CRON_DASHBOARD_SECRET_KEY` — Flask session secret
 - `OPENCLAW_IMAGE` — Base image name (default: `openclaw:local`)
+
+## Scripts (scripts/)
+
+- `rebuild.sh` — Fetch latest OpenClaw release tag, rebuild `openclaw:local` image, restart gateway services only.
+- `post-rebuild-check.sh` — Post-rebuild health check. Inspects gateway containers for crashes/errors (via `docker inspect` + log pattern matching), then invokes `claude --print` inside the container to diagnose and auto-fix issues. Uses release notes from Obsidian vault as context. Env vars: `HOST_HOME` (default `/host_home`), `OPENCLAW_COMPOSE`, `RELEASE_NOTES_DIR`.
 
 ## Key Patterns
 

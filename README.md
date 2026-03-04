@@ -114,6 +114,8 @@ A web-based cron job manager built with Flask + APScheduler.
 - System Health Check (every 30 minutes)
 - Docker Cleanup (weekly)
 - Database Backup (daily, disabled by default)
+- OpenClaw Rebuild (every 2 days at 4:00 AM, disabled by default)
+- Post-Rebuild Health Check (every 2 days at 5:30 AM, disabled by default) — detects gateway crashes/errors after rebuild, then uses `claude --print` to diagnose and auto-fix
 
 You can add your own tasks through the web UI at `http://localhost:18799`.
 

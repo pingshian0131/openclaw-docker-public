@@ -46,6 +46,17 @@ SEED_TASKS = [
         'timeout_secs': 3600,
         'enabled': False,
     },
+    {
+        'name': 'Post-Rebuild Health Check',
+        'description': 'Check openclaw gateway health after rebuild. '
+                       'Detects crashes/errors via docker inspect + logs, '
+                       'then runs claude --print to diagnose and fix.',
+        'cron_expr': '30 5 */2 * *',
+        'command': '/host_home/openclaw-docker/scripts/post-rebuild-check.sh',
+        'working_dir': '/host_home',
+        'timeout_secs': 1800,
+        'enabled': False,
+    },
 ]
 
 
