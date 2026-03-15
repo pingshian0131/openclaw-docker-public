@@ -4,6 +4,17 @@
 
 使用 Docker Compose 運行多個 [OpenClaw](https://github.com/anthropics/claude-code) gateway 環境，內建 **Cron Dashboard** 管理自動化排程任務。
 
+---
+
+> **想要完整的 Demo 環境？**
+> → **[openclaw-demo](https://github.com/ping-web-cc/openclaw-demo)** — 一鍵啟動 pit-stop、agents-dashboard、cron-dashboard、pixel-office 和 Phoenix（可選），專為公開 VPS（Vultr）設計。
+>
+> **想要 Agent 試衣間？**
+> → **[pit-stop-demo](https://github.com/ping-web-cc/pit-stop-demo)** — Demo 模式，預設台詞 + 唯讀 agent 瀏覽。
+> → **[openclaw-not-only-dashboard](https://github.com/ping-web-cc/openclaw-not-only-dashboard)** — 完整版，自行架設使用。
+
+---
+
 ## 架構
 
 ```

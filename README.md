@@ -4,6 +4,17 @@
 
 A Docker Compose setup for running multiple [OpenClaw](https://github.com/anthropics/claude-code) gateway environments with a built-in **Cron Dashboard** for automated task management.
 
+---
+
+> **Looking for a full demo stack?**
+> → **[openclaw-demo](https://github.com/ping-web-cc/openclaw-demo)** — one-command demo with pit-stop, agents-dashboard, cron-dashboard, pixel-office, and optional Phoenix. Designed for public servers (Vultr / VPS).
+>
+> **Looking for the Agent Fitting Room?**
+> → **[pit-stop-demo](https://github.com/ping-web-cc/pit-stop-demo)** — demo-mode pit-stop with scripted responses and read-only agent viewing.
+> → **[openclaw-not-only-dashboard](https://github.com/ping-web-cc/openclaw-not-only-dashboard)** — full-featured version for self-hosted use.
+
+---
+
 ## Architecture
 
 ```
